@@ -83,35 +83,57 @@ def find_last_closed_bracket(text):
 
 #<-------------------------------<%>------------------------------->#
 
-
-def eval_line(line):
+def eval_line(line, env):
     """Evaluates all expressions in a line and returns the resulting value."""
-    # does this need to be passed an environment? look at "logo apply for clue"
-    pass
+    evals = [] 
+    
+    def exp_eval(exp):
+        if isprimitive(exp):
+            return exp
+        elif isvariable(exp):
+            return env.get_var(exp)
+        elif isquoted(exp):
+            return eval_quoted(exp)
+        elif isdefintiton(exp):
+            return eval_definition(exp, env)
+        else:
+            proc = env.get_proc(exp)
+            if proc.args_count != len(list):
+                raise TypeError("Invalid args provided for procedure: {}".format(proc.name))
+            val = apply_procedure(proc, tuple(evals), env)
+            evals = []
+            return val
 
-def exp_eval(exp, env):
-    """Evaluates the first expression in a line."""
-    pass
-
+    while line:
+        val = exp_eval(line.pop())
+        evals.append(val)
+    
+    return evals[0] # return value of last expression (why tho?)
 
 #<-------------------------------<%>------------------------------->#
 
 
 def apply_procedure(proc, args, env):
     """Orchestrates the applying of operands to a procedure."""
-    pass
+    if proc.user_defined:
+        # new env that's dynamically scoped
+        # create vars in new env
+        # call eval_line on each line of the body
+        pass
+
+    else:
+        return proc.body(args)
+        
+
 
 def collect_args(args):
     """Evaluate arguments."""
-    # might need to call apply_procedure if a value isnt primitive, variable, or quoted.
+    # don't need this function because all args have already been evaluated.
     pass
 
 def logo_apply(proc, args):
     """"""
-    # check if primitive or user-defined
-    # if primitive, apply args to Python function from dictionary
-    # if user-defined, create a new environment, create local vars and link args to them
-    # then call eval line again but passing in the new env this time (?)
+    # don't need this anymore
     pass
 
 
