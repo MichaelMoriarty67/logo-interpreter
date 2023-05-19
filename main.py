@@ -1,22 +1,16 @@
-class ExpTree:
-    def __init__(self, operator, operands):
-        self.operator = operator
-        self.operands = operands
-
-    def __repr__(self) -> str:
-        return "{}({})".format(
-            self.operator, list(map(repr, self.operands))
-        )
-
-
 class Environment:
-    def __init__(self, procedures, vars, name = None):
+    def __init__(self, procedures, vars, base_env = None, name = None ):
         self.procedures = procedures
         self.variables = vars
+        self.base_env = base_env
         self.name = name
     
-    def add_name(self, name, value):
-        """Adds or updates a name in the values dictionairy."""
+    def add_proc(self, name, value):
+        """Adds or updates a name in the procedures dictionairy."""
+        pass
+
+    def add_var(self, name, value):
+        """Adds or updates a name in the variables dictionairy."""
         pass
 
     def rem_name(self, name):
@@ -48,14 +42,17 @@ class Procedure:
 
 
 def parse_text(text):
-    """Tokenizes, analyzes, and creates an ExpTree from passed text."""
+    """Tokenizes, analyzes, and creates a nested list structure from a line of Logo code."""
     tokens = tokenizer(text)
     return tokens
 
 def tokenizer(text):
     """Takes in a line of Logo code and returns it as a list of tokens."""
-    # find a way to nest lists when a [ is found and end when a ] is found.
-    # I feel like recursion is going to be the best way
+
+    # doesn't work for values that come after a []
+    # ie: print sentence "this [is a [deep] list]
+    #                                        ^^^
+
     data = []
     if "[" in text:
         b1 = text.index("[")
@@ -83,6 +80,26 @@ def find_last_closed_bracket(text):
 
 #<-------------------------------<%>------------------------------->#
 
+
+def isprimitive(exp):
+    """Determines if syntax of "exp" matches a Logo primitive value."""
+    pass
+
+def isvariable(exp):
+    """Determines if syntax of "exp" matches a Logo varibale value."""
+    pass
+
+def isquoted(exp):
+    """Determines if syntax of "exp" matches a Logo quoted value."""
+    pass
+
+def isdefinition(exp):
+    """Determines if syntax of "exp" matches a Logo definition value."""
+    pass
+
+
+#<-------------------------------<%>------------------------------->#
+
 def eval_line(line, env):
     """Evaluates all expressions in a line and returns the resulting value."""
     evals = [] 
@@ -94,7 +111,7 @@ def eval_line(line, env):
             return env.get_var(exp)
         elif isquoted(exp):
             return eval_quoted(exp)
-        elif isdefintiton(exp):
+        elif isdefinition(exp):
             return eval_definition(exp, env)
         else:
             proc = env.get_proc(exp)
@@ -108,7 +125,7 @@ def eval_line(line, env):
         val = exp_eval(line.pop())
         evals.append(val)
     
-    return evals[0] # return value of last expression (why tho?)
+    return evals[0] # return value of last expression 
 
 #<-------------------------------<%>------------------------------->#
 
@@ -116,25 +133,19 @@ def eval_line(line, env):
 def apply_procedure(proc, args, env):
     """Orchestrates the applying of operands to a procedure."""
     if proc.user_defined:
-        # new env that's dynamically scoped
-        # create vars in new env
-        # call eval_line on each line of the body
-        pass
+        sub_env = Environment({}, {}, env, proc.name) # new env that's dynamically scoped
+        for i in len(args):
+            sub_env.add_var(proc.args[i], args[i]) # create vars in new env
+        
+        lines = proc.body
+        while lines:
+            eval_line(lines.pop(0), sub_env) # call eval_line on each line of the body
+
+        # Do something with "output" values. Somehow it needs to get passed back to the expression that called it.
+        # Also look for "end" and do something with that lol
 
     else:
-        return proc.body(args)
-        
-
-
-def collect_args(args):
-    """Evaluate arguments."""
-    # don't need this function because all args have already been evaluated.
-    pass
-
-def logo_apply(proc, args):
-    """"""
-    # don't need this anymore
-    pass
+        return proc.body(*args) # unpacks the tuple of args and applies them to the python function for the procedure.
 
 
 #<-------------------------------<%>------------------------------->#
