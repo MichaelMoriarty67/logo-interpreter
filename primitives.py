@@ -3,7 +3,7 @@
 
 def logo_make_procedure(name, value, env):
     """Binds a name to a value in the current environment."""
-    pass
+    env.add_var(name, value)
 
 def logo_print_procedure(text):
     """Prints to the REL loop."""

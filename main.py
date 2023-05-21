@@ -87,14 +87,19 @@ def isprimitive(exp):
 
 def isvariable(exp):
     """Determines if syntax of "exp" matches a Logo varibale value."""
-    pass
+    if exp[0] == ":":
+        return True
+    return False
 
 def isquoted(exp):
     """Determines if syntax of "exp" matches a Logo quoted value."""
-    pass
+    if exp[0] =='"':
+        return True
+    return False
 
 def isdefinition(exp):
     """Determines if syntax of "exp" matches a Logo definition value."""
+    # why do I need this if I could use just apply `to`
     pass
 
 
@@ -108,7 +113,7 @@ def eval_line(line, env):
         if isprimitive(exp):
             return exp
         elif isvariable(exp):
-            return env.get_var(exp)
+            return env.get_var(exp[1:])
         elif isquoted(exp):
             return eval_quoted(exp)
         elif isdefinition(exp):
@@ -127,6 +132,7 @@ def eval_line(line, env):
     
     return evals[0] # return value of last expression 
 
+
 #<-------------------------------<%>------------------------------->#
 
 
@@ -139,10 +145,15 @@ def apply_procedure(proc, args, env):
         
         lines = proc.body
         while lines:
+            if lines[0][0] == "output":
+                return eval_line(lines[0][1:])
+
             eval_line(lines.pop(0), sub_env) # call eval_line on each line of the body
 
-        # Do something with "output" values. Somehow it needs to get passed back to the expression that called it.
-        # Also look for "end" and do something with that lol
+        # hardcoded search for output probs works but feels janky...
+        # would be better done if I could achieve the same using "output" as a logo call expression
+
+        return None
 
     else:
         return proc.body(*args) # unpacks the tuple of args and applies them to the python function for the procedure.
