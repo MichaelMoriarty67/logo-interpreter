@@ -138,29 +138,42 @@ def eval_line(line, env):
 
 def apply_procedure(proc, args, env):
     """Orchestrates the applying of operands to a procedure."""
+    
     if proc.user_defined:
         sub_env = Environment({}, {}, env, proc.name) # new env that's dynamically scoped
         for i in len(args):
-            sub_env.add_var(proc.args[i], args[i]) # create vars in new env
+            sub_env.add_var(proc.args[i], args[i]) # bind operands in new env
         
         lines = proc.body
         while lines:
             if lines[0][0] == "output":
                 return eval_line(lines[0][1:])
-
+            
+            if lines[0][0] == "stop":
+                break
+            
             eval_line(lines.pop(0), sub_env) # call eval_line on each line of the body
 
-        # hardcoded search for output probs works but feels janky...
+        # hardcoded search for output & stop probs works but feels janky...
         # would be better done if I could achieve the same using "output" as a logo call expression
 
         return None
 
     else:
         return proc.body(*args) # unpacks the tuple of args and applies them to the python function for the procedure.
+    
+        # do I need to create a new env for primitive procedures?
 
 
 #<-------------------------------<%>------------------------------->#
 
 if __name__ == "__main__":
-    print("[" in 'print sentence "this')
-    print('print sentence "this [is a [deep] list]'.index("["))
+    try:
+        env = Environment({}, {}, None, "GLOBAL")
+
+        while True:
+            tokens = parse_text(input("? "))
+            print(tokens)
+            eval_line(tokens, env)
+    except TypeError as e:
+        print(e)
