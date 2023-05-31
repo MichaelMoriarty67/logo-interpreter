@@ -4,10 +4,12 @@
 def logo_make_procedure(name, value, env):
     """Binds a name to a value in the current environment."""
     env.add_var(name, value)
+    return None
 
 def logo_print_procedure(text):
     """Prints to the REL loop."""
-    pass
+    print(text)
+    return None
 
 def logo_show_procedure(text):
     """Prints to the REL without any syntax removed."""
@@ -38,17 +40,17 @@ def logo_run_procedure(sentence):
 
 def logo_sum_procedure(x, y):
     """Adds two primitive values."""
-    pass
+    return x + y
 
 def logo_difference_procedure(x, y):
     """Subtracts two primitive values."""
-    pass
+    return x - y
 
 def logo_product_procedure(x, y):
     """Multiplies two primitive values."""
-    pass
+    return x * y
 
 def logo_quotient_procedure(x, y):
     """Divides two primitive values."""
-    pass
+    return x / y
 

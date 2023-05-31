@@ -1,3 +1,5 @@
+import primitives
+
 class Environment:
     def __init__(self, procedures, vars, base_env = None, name = None ):
         self.procedures = procedures
@@ -5,21 +7,33 @@ class Environment:
         self.base_env = base_env
         self.name = name
     
-    def add_proc(self, name, value):
+    def add_proc(self, name, value, args = (), args_count = 0, user_defined = True):
         """Adds or updates a name in the procedures dictionairy."""
-        pass
+        proc = Procedure(
+            name,
+            args,
+            value,
+            user_defined,
+            args_count
+        )
+        self.procedures[name] = proc
 
     def add_var(self, name, value):
         """Adds or updates a name in the variables dictionairy."""
-        pass
+        self.variables[name] = value
 
     def rem_name(self, name):
         """Removes a name in the values dictionairy."""
         pass
     
-    def get_val(self, name):
+    def get_proc(self, name):
         """Returns the value bound to a specified name or None."""
-        pass
+        return self.procedures[name]
+    
+    def get_var(self, name):
+        """Returns the value bound to a specified name or None."""
+        return self.variables[name]
+
 
     def __repr__(self) -> str: # this could be formatted cooler to show more like a receipt
         return """{}
@@ -83,7 +97,9 @@ def find_last_closed_bracket(text):
 
 def isprimitive(exp):
     """Determines if syntax of "exp" matches a Logo primitive value."""
-    pass
+    if exp.isdigit() or exp.lower() == "true" or exp.lower() == "false":
+        return True
+    return False
 
 def isvariable(exp):
     """Determines if syntax of "exp" matches a Logo varibale value."""
@@ -100,7 +116,7 @@ def isquoted(exp):
 def isdefinition(exp):
     """Determines if syntax of "exp" matches a Logo definition value."""
     # why do I need this if I could use just apply `to`
-    pass
+    return False
 
 
 #<-------------------------------<%>------------------------------->#
@@ -110,6 +126,8 @@ def eval_line(line, env):
     evals = [] 
     
     def exp_eval(exp):
+        nonlocal evals
+
         if isprimitive(exp):
             return exp
         elif isvariable(exp):
@@ -120,7 +138,7 @@ def eval_line(line, env):
             return eval_definition(exp, env)
         else:
             proc = env.get_proc(exp)
-            if proc.args_count != len(list):
+            if proc.args_count != len(evals):
                 raise TypeError("Invalid args provided for procedure: {}".format(proc.name))
             val = apply_procedure(proc, tuple(evals), env)
             evals = []
@@ -167,13 +185,26 @@ def apply_procedure(proc, args, env):
 
 #<-------------------------------<%>------------------------------->#
 
-if __name__ == "__main__":
+def logo_cold_start():
+    """Starts a logo global environment."""
+    g = Environment({}, {}, None, "GLOBAL")
+    g.add_proc("print", primitives.logo_print_procedure, ("text"), 1, False)
+    return g
+
+
+def logo_repl_loop():
     try:
-        env = Environment({}, {}, None, "GLOBAL")
+        global_env = logo_cold_start()
 
         while True:
             tokens = parse_text(input("? "))
             print(tokens)
-            eval_line(tokens, env)
-    except TypeError as e:
-        print(e)
+            eval_line(tokens, global_env)
+    except Exception as e:
+        print("Found an Error of type {}: {}".format(type(e), e))
+
+
+#<-------------------------------<%>------------------------------->#
+
+if __name__ == "__main__":
+    logo_repl_loop()
