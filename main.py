@@ -151,6 +151,10 @@ def eval_line(line, env):
     return evals[0] # return value of last expression 
 
 
+def eval_quoted(exp):
+    return exp[1:]
+
+
 #<-------------------------------<%>------------------------------->#
 
 
