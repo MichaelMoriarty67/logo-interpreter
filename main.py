@@ -116,6 +116,8 @@ def isquoted(exp):
 def isdefinition(exp):
     """Determines if syntax of "exp" matches a Logo definition value."""
     # why do I need this if I could use just apply `to`
+    # a: because you are accessing an undefined amount of operands which can't be done with
+    #    the current implementation where operand count must be known.
     return False
 
 

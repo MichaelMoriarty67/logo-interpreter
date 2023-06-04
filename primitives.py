@@ -15,12 +15,20 @@ def logo_show_procedure(text):
     """Prints to the REL without any syntax removed."""
 
 def logo_sentence_procedure(item1, item2):
+    """Creates a deconstructed Logo sentence from two variables."""
+    return [*item1, *item2]
+
+def logo_list_procedure(item1, item2):
     """Creates a Logo sentence from two variables."""
-    pass
+    return [item1, item2]
+
+def logo_fput_procedure(item1, item2):
+    """Creates a Logo sentence from one variable, and one deconstructed variable."""
+    return [item1, *item2]
 
 def logo_first_procedure(sentence):
     """Selects the first element in a sentence."""
-    pass
+    return 
 
 def logo_last_procedure(sentence):
     """Selects the last element in a sentence."""
