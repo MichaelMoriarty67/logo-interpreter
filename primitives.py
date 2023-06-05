@@ -3,6 +3,7 @@
 
 def logo_make_procedure(name, value, env):
     """Binds a name to a value in the current environment."""
+    # needs more features, check page 144 of book
     env.add_var(name, value)
     return None
 
@@ -13,6 +14,7 @@ def logo_print_procedure(text):
 
 def logo_show_procedure(text):
     """Prints to the REL without any syntax removed."""
+    pass
 
 def logo_sentence_procedure(item1, item2):
     """Creates a deconstructed Logo sentence from two variables."""
@@ -28,15 +30,21 @@ def logo_fput_procedure(item1, item2):
 
 def logo_first_procedure(sentence):
     """Selects the first element in a sentence."""
-    return 
+    if len(sentence) == 0:
+        raise Exception("Error. Cannot take first of a blank sentence.")
+    return str(sentence[0])
 
 def logo_last_procedure(sentence):
     """Selects the last element in a sentence."""
-    pass
+    if len(sentence) == 0:
+        raise Exception("Error. Cannot take last of a blank sentence.")
+    return str(sentence[-1])
 
 def logo_butfirst_procedure(sentence):
     """Returns all but the first element in a sentence."""
-    pass
+    if len(sentence) == 0:
+        raise Exception("Error. Cannot take butfirst of a blank sentence.")
+    return str(sentence[1:])
 
 def logo_to_procedure(name, args: tuple):
     """Creates a Logo procedure."""
@@ -44,6 +52,7 @@ def logo_to_procedure(name, args: tuple):
 
 def logo_run_procedure(sentence):
     """Runs a sentence as if it was line of Logo code."""
+    # can I pass this to eval_line somehow?
     pass
 
 def logo_sum_procedure(x, y):

@@ -97,7 +97,7 @@ def find_last_closed_bracket(text):
 
 def isprimitive(exp):
     """Determines if syntax of "exp" matches a Logo primitive value."""
-    if exp.isdigit() or exp.lower() == "true" or exp.lower() == "false":
+    if type(exp).__name__ == "list" or exp.isdigit() or exp.lower() == "true" or exp.lower() == "false":
         return True
     return False
 
@@ -195,6 +195,7 @@ def logo_cold_start():
     """Starts a logo global environment."""
     g = Environment({}, {}, None, "GLOBAL")
     g.add_proc("print", primitives.logo_print_procedure, ("text"), 1, False)
+    g.add_proc("sentence", primitives.logo_sentence_procedure, ("item1", "item2"), 2, False)
     return g
 
 
