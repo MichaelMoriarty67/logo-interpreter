@@ -196,6 +196,11 @@ def logo_cold_start():
     g = Environment({}, {}, None, "GLOBAL")
     g.add_proc("print", primitives.logo_print_procedure, ("text"), 1, False)
     g.add_proc("sentence", primitives.logo_sentence_procedure, ("item1", "item2"), 2, False)
+    g.add_proc("list", primitives.logo_list_procedure, ("item1", "item2"), 2, False)
+    g.add_proc("fput", primitives.logo_fput_procedure, ("item1", "item2"), 2, False)
+    g.add_proc("first", primitives.logo_first_procedure, ("setence"), 1, False)
+    g.add_proc("last", primitives.logo_last_procedure, ("setence"), 1, False)
+    g.add_proc("butfirst", primitives.logo_butfirst_procedure, ("setence"), 1, False)
     return g
 
 
