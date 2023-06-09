@@ -142,13 +142,15 @@ def eval_line(line, env):
             proc = env.get_proc(exp)
             if proc.args_count != len(evals):
                 raise TypeError("Invalid args provided for procedure: {}".format(proc.name))
-            val = apply_procedure(proc, tuple(evals), env)
+            print("Evals: {}".format(evals))
+            val = apply_procedure(proc, evals, env)
             evals = []
+            print("Val to be appended: {}".format(val))
             return val
 
     while line:
         val = exp_eval(line.pop())
-        evals.append(val)
+        evals.insert(0, val)
     
     return evals[0] # return value of last expression 
 

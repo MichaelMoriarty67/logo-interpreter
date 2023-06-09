@@ -18,6 +18,8 @@ def logo_show_procedure(text):
 
 def logo_sentence_procedure(item1, item2):
     """Creates a deconstructed Logo sentence from two variables."""
+    # problem is that if I get '10' as a value, I am deconstructing the string. I only want to deconstruct lists
+
     return [*item1, *item2]
 
 def logo_list_procedure(item1, item2):
