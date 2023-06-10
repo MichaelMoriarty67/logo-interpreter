@@ -10,7 +10,7 @@ def logo_make_procedure(name, value, env):
 def logo_print_procedure(text):
     """Prints to the REL loop."""
     print(text)
-    return None
+    return None # maybe remove this?
 
 def logo_show_procedure(text):
     """Prints to the REL without any syntax removed."""
@@ -20,7 +20,19 @@ def logo_sentence_procedure(item1, item2):
     """Creates a deconstructed Logo sentence from two variables."""
     # problem is that if I get '10' as a value, I am deconstructing the string. I only want to deconstruct lists
 
-    return [*item1, *item2]
+    return str_friendly_unpack(item1, item2)
+
+def str_friendly_unpack(*args,):
+        l = []
+        for i in range(len(args)):
+            if type(args[i]).__name__ == "str":
+                l.append(args[i])
+            else:
+                for item in args[i]:
+                    l.append(item)
+                # l.append(*args[i])
+
+        return l
 
 def logo_list_procedure(item1, item2):
     """Creates a Logo sentence from two variables."""
