@@ -1,14 +1,19 @@
 # write all primitive functions here in python and then import them all to the global env upon startup
-
+import utils
 
 def logo_make_procedure(name, value, env):
     """Binds a name to a value in the current environment."""
     # needs more features, check page 144 of book
+
+    # problem also lies that we need access to the env without passing it as a direct argument (or else we'll get too few args error)
     env.add_var(name, value)
     return None
 
 def logo_print_procedure(text):
     """Prints to the REL loop."""
+    # if sentence, reformat
+    # if word, determine what the word reps (number, string, boolean, etc) and  format correctly
+
     print(text)
     return None # maybe remove this?
 
@@ -20,19 +25,7 @@ def logo_sentence_procedure(item1, item2):
     """Creates a deconstructed Logo sentence from two variables."""
     # problem is that if I get '10' as a value, I am deconstructing the string. I only want to deconstruct lists
 
-    return str_friendly_unpack(item1, item2)
-
-def str_friendly_unpack(*args,):
-        l = []
-        for i in range(len(args)):
-            if type(args[i]).__name__ == "str":
-                l.append(args[i])
-            else:
-                for item in args[i]:
-                    l.append(item)
-                # l.append(*args[i])
-
-        return l
+    return utils.str_friendly_unpack(item1, item2)
 
 def logo_list_procedure(item1, item2):
     """Creates a Logo sentence from two variables."""
@@ -40,6 +33,8 @@ def logo_list_procedure(item1, item2):
 
 def logo_fput_procedure(item1, item2):
     """Creates a Logo sentence from one variable, and one deconstructed variable."""
+    # this will break if item2 is a sole string with len > 1
+
     return [item1, *item2]
 
 def logo_first_procedure(sentence):

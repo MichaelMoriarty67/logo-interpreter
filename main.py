@@ -70,12 +70,12 @@ def tokenizer(text):
     data = []
     if "[" in text:
         b1 = text.index("[")
-        print(b1)
+        print("Index of [ found at: {}".format(b1))
         data.extend(text[:b1].split())
 
-        print(text[b1:])
+        print("Text post [: {}".format(text[b1:]))
         b2 = find_last_closed_bracket(text[b1:])
-        print("b2: {}".format(b2))
+        print("Index of ]: {}".format(b2))
         nested_text = tokenizer(text[b1+1:b1+b2])
         data.append(nested_text)
     
@@ -142,10 +142,10 @@ def eval_line(line, env):
             proc = env.get_proc(exp)
             if proc.args_count != len(evals):
                 raise TypeError("Invalid args provided for procedure: {}".format(proc.name))
-            print("Evals: {}".format(evals))
+            print("'Evals' before apply_procedure: {}".format(evals))
             val = apply_procedure(proc, evals, env)
             evals = []
-            print("Val to be appended: {}".format(val))
+            print("Val to be added to 'evals' post apply_procedure: {}".format(val))
             return val
 
     while line:
@@ -212,7 +212,7 @@ def logo_repl_loop():
 
         while True:
             tokens = parse_text(input("? "))
-            print(tokens)
+            print("Tokens from parser: {}".format(tokens))
             eval_line(tokens, global_env)
     except Exception as e:
         print("Found an Error of type {}: {}".format(type(e), e))
