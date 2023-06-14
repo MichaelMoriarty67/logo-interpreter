@@ -20,6 +20,12 @@ class Environment:
 
     def add_var(self, name, value):
         """Adds or updates a name in the variables dictionairy."""
+        e, _ = self.get_var(name)
+        if e is not None:
+            e.variables[name] = value
+        else:
+            GLOBAL_ENV.variables[name] = value
+        
         self.variables[name] = value
 
     def rem_name(self, name):
@@ -31,8 +37,16 @@ class Environment:
         return self.procedures[name]
     
     def get_var(self, name):
-        """Returns the value bound to a specified name or None."""
-        return self.variables[name]
+        """Returns the value bound to a specified name and the env it's found in."""
+        env = self
+        value = None
+        while env:
+            try:
+                value = self.variables[name]
+                return env, value
+            except UnboundLocalError and KeyError:
+                env = env.base_env
+        return env, value
 
 
     def __repr__(self) -> str: # this could be formatted cooler to show more like a receipt
@@ -173,7 +187,7 @@ def apply_procedure(proc, args, env):
         lines = proc.body
         while lines:
             if lines[0][0] == "output":
-                return eval_line(lines[0][1:])
+                return eval_line(lines[0][1:], sub_env)
             
             if lines[0][0] == "stop":
                 break
@@ -186,7 +200,9 @@ def apply_procedure(proc, args, env):
         return None
 
     else:
-        return proc.body(*args) # unpacks the tuple of args and applies them to the python function for the procedure.
+        if proc.name == "make": # sort of a workaround, more robust system for working with env would be better
+            return proc.body(env, *args)
+        return proc.body(*args) # unpacks the list of args and applies them to the procedure.
     
         # do I need to create a new env for primitive procedures?
 
@@ -203,22 +219,32 @@ def logo_cold_start():
     g.add_proc("first", primitives.logo_first_procedure, ("setence"), 1, False)
     g.add_proc("last", primitives.logo_last_procedure, ("setence"), 1, False)
     g.add_proc("butfirst", primitives.logo_butfirst_procedure, ("setence"), 1, False)
+    g.add_proc("make", primitives.logo_make_procedure, ("name", "value"), 2, False)
     return g
 
 
 def logo_repl_loop():
     try:
-        global_env = logo_cold_start()
+        GLOBAL_ENV = logo_cold_start()
 
         while True:
             tokens = parse_text(input("? "))
             print("Tokens from parser: {}".format(tokens))
-            eval_line(tokens, global_env)
+            eval_line(tokens, GLOBAL_ENV)
     except Exception as e:
         print("Found an Error of type {}: {}".format(type(e), e))
+
+def logo_repl_debug_loop():
+    GLOBAL_ENV = logo_cold_start()
+
+    while True:
+        tokens = parse_text(input("? "))
+        print("Tokens from parser: {}".format(tokens))
+        eval_line(tokens, GLOBAL_ENV)
 
 
 #<-------------------------------<%>------------------------------->#
 
 if __name__ == "__main__":
-    logo_repl_loop()
+    global GLOBAL_ENV
+    logo_repl_debug_loop()

@@ -1,7 +1,7 @@
 # write all primitive functions here in python and then import them all to the global env upon startup
 import utils
 
-def logo_make_procedure(name, value, env):
+def logo_make_procedure(env, name, value):
     """Binds a name to a value in the current environment."""
     # needs more features, check page 144 of book
 
