@@ -3,9 +3,6 @@ import utils
 
 def logo_make_procedure(env, name, value):
     """Binds a name to a value in the current environment."""
-    # needs more features, check page 144 of book
-
-    # problem also lies that we need access to the env without passing it as a direct argument (or else we'll get too few args error)
     env.add_var(name, value)
     return None
 

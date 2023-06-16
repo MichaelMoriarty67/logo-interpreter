@@ -1,70 +1,7 @@
 import primitives
+import classes
 
-class Environment:
-    def __init__(self, procedures, vars, base_env = None, name = None ):
-        self.procedures = procedures
-        self.variables = vars
-        self.base_env = base_env
-        self.name = name
-    
-    def add_proc(self, name, value, args = (), args_count = 0, user_defined = True):
-        """Adds or updates a name in the procedures dictionairy."""
-        proc = Procedure(
-            name,
-            args,
-            value,
-            user_defined,
-            args_count
-        )
-        self.procedures[name] = proc
-
-    def add_var(self, name, value):
-        """Adds or updates a name in the variables dictionairy."""
-        e, _ = self.get_var(name)
-        if e is not None:
-            e.variables[name] = value
-        else:
-            GLOBAL_ENV.variables[name] = value
-        
-        self.variables[name] = value
-
-    def rem_name(self, name):
-        """Removes a name in the values dictionairy."""
-        pass
-    
-    def get_proc(self, name):
-        """Returns the value bound to a specified name or None."""
-        return self.procedures[name]
-    
-    def get_var(self, name):
-        """Returns the value bound to a specified name and the env it's found in."""
-        env = self
-        value = None
-        while env:
-            try:
-                value = self.variables[name]
-                return env, value
-            except UnboundLocalError and KeyError:
-                env = env.base_env
-        return env, value
-
-
-    def __repr__(self) -> str: # this could be formatted cooler to show more like a receipt
-        return """{}
-        _________
-        {}
-        
-        """.format(self.name, self.values)
-    
-
-class Procedure:
-    def __init__(self, name, args, body, user_defined, args_count) -> None:
-        self.name = name
-        self.body = body
-        self.args = args
-        self.user_defined = user_defined
-        self.args_count = args_count
-
+GLOBAL_ENV = classes.Environment({}, {}, None, "GLOBAL")
 
 #<-------------------------------<%>------------------------------->#
 
@@ -147,7 +84,8 @@ def eval_line(line, env):
         if isprimitive(exp):
             return exp
         elif isvariable(exp):
-            return env.get_var(exp[1:])
+            _, v = env.get_var(exp[1:])
+            return v
         elif isquoted(exp):
             return eval_quoted(exp)
         elif isdefinition(exp):
@@ -180,7 +118,7 @@ def apply_procedure(proc, args, env):
     """Orchestrates the applying of operands to a procedure."""
     
     if proc.user_defined:
-        sub_env = Environment({}, {}, env, proc.name) # new env that's dynamically scoped
+        sub_env = classes.Environment({}, {}, env, proc.name) # new env that's dynamically scoped
         for i in len(args):
             sub_env.add_var(proc.args[i], args[i]) # bind operands in new env
         
@@ -209,23 +147,22 @@ def apply_procedure(proc, args, env):
 
 #<-------------------------------<%>------------------------------->#
 
-def logo_cold_start():
+def logo_cold_start(e):
     """Starts a logo global environment."""
-    g = Environment({}, {}, None, "GLOBAL")
-    g.add_proc("print", primitives.logo_print_procedure, ("text"), 1, False)
-    g.add_proc("sentence", primitives.logo_sentence_procedure, ("item1", "item2"), 2, False)
-    g.add_proc("list", primitives.logo_list_procedure, ("item1", "item2"), 2, False)
-    g.add_proc("fput", primitives.logo_fput_procedure, ("item1", "item2"), 2, False)
-    g.add_proc("first", primitives.logo_first_procedure, ("setence"), 1, False)
-    g.add_proc("last", primitives.logo_last_procedure, ("setence"), 1, False)
-    g.add_proc("butfirst", primitives.logo_butfirst_procedure, ("setence"), 1, False)
-    g.add_proc("make", primitives.logo_make_procedure, ("name", "value"), 2, False)
-    return g
+    e.add_proc("print", primitives.logo_print_procedure, ("text"), 1, False)
+    e.add_proc("sentence", primitives.logo_sentence_procedure, ("item1", "item2"), 2, False)
+    e.add_proc("list", primitives.logo_list_procedure, ("item1", "item2"), 2, False)
+    e.add_proc("fput", primitives.logo_fput_procedure, ("item1", "item2"), 2, False)
+    e.add_proc("first", primitives.logo_first_procedure, ("setence"), 1, False)
+    e.add_proc("last", primitives.logo_last_procedure, ("setence"), 1, False)
+    e.add_proc("butfirst", primitives.logo_butfirst_procedure, ("setence"), 1, False)
+    e.add_proc("make", primitives.logo_make_procedure, ("name", "value"), 2, False)
+    return e
 
 
 def logo_repl_loop():
     try:
-        GLOBAL_ENV = logo_cold_start()
+        GLOBAL_ENV = logo_cold_start(GLOBAL_ENV)
 
         while True:
             tokens = parse_text(input("? "))
@@ -235,7 +172,9 @@ def logo_repl_loop():
         print("Found an Error of type {}: {}".format(type(e), e))
 
 def logo_repl_debug_loop():
-    GLOBAL_ENV = logo_cold_start()
+    global GLOBAL_ENV
+
+    GLOBAL_ENV = logo_cold_start(GLOBAL_ENV)
 
     while True:
         tokens = parse_text(input("? "))
@@ -246,5 +185,4 @@ def logo_repl_debug_loop():
 #<-------------------------------<%>------------------------------->#
 
 if __name__ == "__main__":
-    global GLOBAL_ENV
     logo_repl_debug_loop()
