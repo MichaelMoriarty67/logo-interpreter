@@ -1,22 +1,23 @@
 import utils
 
+
 class Environment:
-    def __init__(self, procedures, vars, base_env = None, name = None ):
+    def __init__(
+        self,
+        procedures: dict,
+        vars: dict,
+        base_env=None,
+        name: str = None,
+    ):
         self.procedures = procedures
         self.variables = vars
         self.base_env = base_env
         self.name = name
-    
-    def add_proc(self, name, value, args = (), args_count = 0, user_defined = True):
+
+    def add_proc(self, proc_name, value, args=(), args_count=0, user_defined=True):
         """Adds or updates a name in the procedures dictionairy."""
-        proc = Procedure(
-            name,
-            args,
-            value,
-            user_defined,
-            args_count
-        )
-        self.procedures[name] = proc
+        proc = Procedure(proc_name, args, value, user_defined, args_count)
+        self.procedures[proc_name] = proc
 
     def add_var(self, name, value):
         """Adds or updates a name in the variables dictionairy."""
@@ -27,14 +28,10 @@ class Environment:
             g = utils.find_global_env(self)
             g.variables[name] = value
 
-    def rem_name(self, name):
-        """Removes a name in the values dictionairy."""
-        pass
-    
     def get_proc(self, name):
         """Returns the value bound to a specified name or None."""
         return self.procedures[name]
-    
+
     def get_var(self, name):
         """Returns the value bound to a specified name and the env it's found in."""
         env = self
@@ -47,20 +44,18 @@ class Environment:
                 env = env.base_env
         return env, value
 
-
-    def __repr__(self) -> str: # this could be formatted cooler to show more like a receipt
-        return """Environment: {}
-
-Varibale Dictionary:
-_________
-
-{}
-""".format(self.name, self.variables)
-    
+    def __repr__(
+        self,
+    ) -> str:  # this could be formatted cooler to show more like a receipt
+        return f"""Environment: {self.name}
+Current vars: {self.variables}
+Current procedures: {self.procedures}"""
 
 
 class Procedure:
-    def __init__(self, name, args, body, user_defined, args_count) -> None:
+    def __init__(
+        self, name: str, args, body, user_defined: bool, args_count: int
+    ) -> None:
         self.name = name
         self.body = body
         self.args = args
