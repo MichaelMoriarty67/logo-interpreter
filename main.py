@@ -74,6 +74,11 @@ def _find_last_closed_bracket(text: str):
     return None
 
 
+def input_procedure() -> [str]:
+    """Takes logo code as input for procedure creation."""
+    pass
+
+
 def eval_line(line: list, env: classes.Environment):
     """Evaluates all expressions in a line of code and returns the resulting value."""
     evals = []
@@ -85,15 +90,23 @@ def eval_line(line: list, env: classes.Environment):
             return exp
         elif isvariable(exp):
             _, v = env.get_var(exp[1:])
-            return v  # TODO: handle if var doesn't exist (get_var returns None)
-            # this will happen when creating user-defined procs
+            return v
         elif isquoted(exp):
             return eval_quoted(exp)
         elif isdefinition(exp):
-            # parse out proc name, arg names, and # of args
+            proc_name = evals[0]
+            proc_args = evals[1:]
 
-            # create a new proc in the current env
-            # reset evals
+            body = input_procedure()
+
+            env.add_proc(
+                proc_name=proc_name,
+                body=body,
+                args=proc_args,
+                args_count=len(proc_args),
+            )
+
+            evals = []
             return None
         else:
             proc = env.get_proc(exp)
@@ -113,14 +126,9 @@ def eval_line(line: list, env: classes.Environment):
         if val is not None:
             evals.insert(0, val)
 
-    return evals[0]  # return value of last expression
-
 
 def eval_quoted(exp):
     return exp[1:]
-
-
-# <-------------------------------<%>------------------------------->#
 
 
 def apply_procedure(proc: classes.Procedure, args: list, env: classes.Environment):
@@ -130,21 +138,18 @@ def apply_procedure(proc: classes.Procedure, args: list, env: classes.Environmen
         sub_env = classes.Environment(
             {}, {}, env, proc.name
         )  # new env that's dynamically scoped
+
         for i in len(args):
             sub_env.add_var(proc.args[i], args[i])  # bind operands in new env
 
         lines = proc.body
-        while lines:
-            if lines[0][0] == "output":
-                return eval_line(lines[0][1:], sub_env)
 
-            if lines[0][0] == "stop":
-                break
-
-            eval_line(lines.pop(0), sub_env)  # call eval_line on each line of the body
-
-        # hardcoded search for output & stop probs works but feels janky...
-        # would be better done if I could achieve the same using "output" as a logo call expression
+        try:
+            while lines:
+                line = tokenizer(lines.pop(0))  # turn a line into tokens
+                eval_line(line, sub_env)  # call eval_line on each line of the body
+        except classes.OuputException as e:
+            return e.get_exp()
 
         return None
 
