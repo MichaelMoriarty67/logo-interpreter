@@ -1,8 +1,10 @@
 # write all primitive functions here in python and then import them all to the global env upon startup
 import utils
+import classes
 
-def logo_make_procedure(env, name, value):
+def logo_make_procedure(env: classes.Environment, name: str, value: str | list | int):
     """Binds a name to a value in the current environment."""
+    print(env)
     env.add_var(name, value)
     return None
 

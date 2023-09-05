@@ -5,13 +5,7 @@ GLOBAL_ENV = classes.Environment({}, {}, None, "GLOBAL")
 
 #<-------------------------------<%>------------------------------->#
 
-
-def parse_text(text):
-    """Tokenizes, analyzes, and creates a nested list structure from a line of Logo code."""
-    tokens = tokenizer(text)
-    return tokens
-
-def tokenizer(text):
+def tokenizer(text: str):
     """Takes in a line of Logo code and returns it as a list of tokens."""
 
     # doesn't work for values that come after a []
@@ -35,7 +29,7 @@ def tokenizer(text):
     
     return data
 
-def find_last_closed_bracket(text):
+def find_last_closed_bracket(text: str):
     """Find the last closed square bracket from a string of text."""
     for i in range(len(text)):
         if text[-i] == "]":
@@ -74,8 +68,8 @@ def isdefinition(exp):
 
 #<-------------------------------<%>------------------------------->#
 
-def eval_line(line, env):
-    """Evaluates all expressions in a line and returns the resulting value."""
+def eval_line(line: list, env: classes.Environment):
+    """Evaluates all expressions in a line of code and returns the resulting value."""
     evals = [] 
     
     def exp_eval(exp):
@@ -114,7 +108,7 @@ def eval_quoted(exp):
 #<-------------------------------<%>------------------------------->#
 
 
-def apply_procedure(proc, args, env):
+def apply_procedure(proc: classes.Procedure, args: list, env: classes.Environment):
     """Orchestrates the applying of operands to a procedure."""
     
     if proc.user_defined:
@@ -147,7 +141,7 @@ def apply_procedure(proc, args, env):
 
 #<-------------------------------<%>------------------------------->#
 
-def logo_cold_start(e):
+def logo_cold_start(e: classes.Environment):
     """Starts a logo global environment."""
     e.add_proc("print", primitives.logo_print_procedure, ("text"), 1, False)
     e.add_proc("sentence", primitives.logo_sentence_procedure, ("item1", "item2"), 2, False)
@@ -165,7 +159,7 @@ def logo_repl_loop():
         GLOBAL_ENV = logo_cold_start(GLOBAL_ENV)
 
         while True:
-            tokens = parse_text(input("? "))
+            tokens = tokenizer(input("? "))
             print("Tokens from parser: {}".format(tokens))
             eval_line(tokens, GLOBAL_ENV)
     except Exception as e:
@@ -177,7 +171,7 @@ def logo_repl_debug_loop():
     GLOBAL_ENV = logo_cold_start(GLOBAL_ENV)
 
     while True:
-        tokens = parse_text(input("? "))
+        tokens = tokenizer(input("? "))
         print("Tokens from parser: {}".format(tokens))
         eval_line(tokens, GLOBAL_ENV)
 

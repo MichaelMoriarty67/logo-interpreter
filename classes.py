@@ -50,12 +50,12 @@ class Environment:
 
     def __repr__(self) -> str: # this could be formatted cooler to show more like a receipt
         return """Environment: {}
-        
-        Varibale Dictionary:
-        _________
-        {}
-        
-        """.format(self.name, self.variables)
+
+Varibale Dictionary:
+_________
+
+{}
+""".format(self.name, self.variables)
     
 
 
